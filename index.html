@@ -2,9 +2,6 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
 
   <link rel="stylesheet" href="./style/reset.css">
@@ -13,20 +10,12 @@
 <body>
 
 <div id="whole-wrapper">
-  <div id="character-wrapper">
-    캐릭터
-  </div>
-
+  <div id="character-wrapper"></div>
   <div id="chat-wrapper">
-    <div id="name">
-      임시
-    </div>
+    <div id="name"></div>
     <div id="text-wrapper">
-      <div id="text">
-        임시텍스트
-      </div>
-
-      <div id="next">
+      <div id="text"></div>
+      <div id="next" onclick="parse(++cursor)">
         &gt;
       </div>
     </div>
@@ -38,5 +27,68 @@
     </div>
   </div>
 </div>
+
+<script>
+
+  let cursor = 0
+
+  const scenario = [
+    {
+      "name": "김애저",
+      "text": "첫번째 샘플 텍스트입니다.",
+      "image": {
+        "src": './images/char.PNG',
+        "alt": '김애저'
+      }
+    },
+    {
+      "name": "김애저",
+      "text": "두번쨰 샘플 텍스트입니다.",
+    },
+    {
+      "text": "이름이 없는 경우에는 이름 창이 사라졌으면 좋겠어요."
+    },
+    {
+      "name": "rladowj",
+      "text": "왈왈",
+      "image": {
+        "src": './images/char.PNG',
+        "alt": '김애저'
+      }
+    }
+  ]
+
+
+  const parse = (i = 0) => {
+
+    const {text, name, image} = scenario[i];
+
+    //화면을 초기화 해줍니다.
+    document.getElementById('name').style.display = 'none';
+    document.getElementById('character-wrapper').innerHTML = null;
+
+    //텍스트를 출력 해 줍니다.
+    document.getElementById('text').innerText = text;
+
+    //이름유무에 따른 출력
+    if (!!name) {
+      document.getElementById('name').style.display = 'grid';
+      document.getElementById('name').innerText = name;
+    }
+
+    //이미지 유무에 따른 출력
+    if (!!image) {
+      document.getElementById('character-wrapper').innerHTML = `<img src="${image.src}" alt="${image.alt}"/>`
+    }
+
+    //커서가 시나리오의 끝에 오면 화살표를 지웁니다.
+    if (scenario.length-1 === cursor) {
+      document.getElementById('next').style.display = 'none';
+    }
+  }
+
+  parse(cursor);
+
+</script>
 </body>
 </html>
