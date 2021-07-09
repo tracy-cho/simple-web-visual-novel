@@ -29,49 +29,140 @@
   </div>
   <div id="selector-wrapper">
     <ul id="selector">
-      <li>aa</li>
-      <li>bb</li>
     </ul>
   </div>
 </div>
 
 <script>
 
-  let cursor = 0
+  let cursor = 0;
+  let currentPhase = "start";
 
-  const scenario = [
-    {
-      "name": "김애저",
-      "text": "첫번째 샘플 텍스트입니다.",
-      "image": {
-        "src": './images/char.PNG',
-        "alt": '김애저'
+  const favor = {}
+
+  const scenario = {
+    "start": [
+      {
+        "name": "김애저",
+        "text": "첫번째 샘플 텍스트입니다.",
+        "image": {
+          "src": './images/char.PNG',
+          "alt": '김애저'
+        }
+      },
+      {
+        "name": "김애저",
+        "text": "두번쨰 샘플 텍스트입니다.",
+      },
+      {
+        "text": "이름이 없는 경우에는 이름 창이 사라졌으면 좋겠어요."
+      },
+      {
+        "name": "rladowj",
+        "text": "왈왈",
+        "image": {
+          "src": './images/char.PNG',
+          "alt": '김애저'
+        }
+      },
+      {
+        "select": [
+          {
+            "text": "선택지 1번",
+            "variable": [
+              {
+                "name": "캐릭터1",
+                "cnt": 3
+              },
+              {
+                "name": "캐릭터2",
+                "cnt": -3
+              }
+            ],
+            "jump": "select1"
+          }, {
+            "text": "선택지 2번",
+            "variable": [
+              {
+                "name": "캐릭터1",
+                "cnt": 5
+              },
+              {
+                "name": "캐릭터2",
+                "cnt": -6
+              }
+            ]
+          }, {
+            "text": "선택지 3번",
+            "variable": [
+              {
+                "name": "캐릭터1",
+                "cnt": 1
+              },
+              {
+                "name": "캐릭터2",
+                "cnt": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "김애저",
+        "text": "선택완료",
+        "image": {
+          "src": './images/char.PNG',
+          "alt": '김애저'
+        }
       }
-    },
-    {
-      "name": "김애저",
-      "text": "두번쨰 샘플 텍스트입니다.",
-    },
-    {
-      "text": "이름이 없는 경우에는 이름 창이 사라졌으면 좋겠어요."
-    },
-    {
-      "name": "rladowj",
-      "text": "왈왈",
-      "image": {
-        "src": './images/char.PNG',
-        "alt": '김애저'
+    ],
+    "select1": [
+      {
+        "text": "선택지 1번을 클릭 했습니다",
+      },
+      {
+        "text": "시작으로 돌아가기",
+        "jump": "start"
+      },
+    ]
+  }
+
+
+  const addFavor = (v) =>
+    v.forEach(i => {
+      if (!favor[i.name]) {
+        favor[i.name] = i.cnt;
+      } else {
+        favor[i.name] += i.cnt;
       }
+    })
+
+  const jumping = (jump) => {
+    currentPhase = jump
+    cursor = 0;
+    parse(0);
+  }
+  const handleSelect = (v) => {
+    const {variable, jump} = JSON.parse(decodeURI(v))
+
+    if (!!variable) {
+      addFavor(variable)
     }
-  ]
-
+    //jump가 있으면 점프하고, 없으면 시나리오를 이어서 출력합니다.
+    if (!!jump) {
+      jumping(jump)
+    } else {
+      parse(++cursor)
+    }
+  }
 
   const parse = (i = 0) => {
 
-    const {text, name, image} = scenario[i];
+    const {text, name, image, select, jump} = scenario[currentPhase][i];
 
     //화면을 초기화 해줍니다.
     document.getElementById('name').style.display = 'none';
+    document.getElementById('selector-wrapper').style.display = 'none';
     document.getElementById('character-wrapper').innerHTML = null;
 
     //텍스트를 출력 해 줍니다.
@@ -88,11 +179,25 @@
       document.getElementById('character-wrapper').innerHTML = `<img src="${image.src}" alt="${image.alt}"/>`
     }
 
-    //커서가 시나리오의 끝에 오면 화살표를 지웁니다.
-    if (scenario.length - 1 === cursor) {
+    //선택지가 있으면 선택지를 출력 해 줍니다.
+    if (!!select) {
+      document.getElementById('selector-wrapper').style.display = 'grid';
+      document.getElementById('selector').innerHTML = select.map(i =>
+        `<li onclick="handleSelect('${encodeURI(JSON.stringify(i))}')">${i.text}</li>`).join('')
+    }
+
+    //jump가 있으면 해당 시나리오 오브젝트로 이동합니다.
+    if (!!jump) {
+      jumping(jump);
+    }
+
+    //커서가 시나리오의 끝에 오면 화살표를 지웁니다. 점프가 있으면 뒤가 이어지니 계속 출력합니다.
+    if (scenario[currentPhase].length - 1 === cursor && !jump) {
       document.getElementById('next').style.display = 'none';
     }
+    
   }
+
 
   parse(cursor);
 
