@@ -10,6 +10,7 @@
 <body>
 
 <div id="whole-wrapper">
+
   <div id="character-wrapper"></div>
   <div id="chat-wrapper">
     <div id="name"></div>
@@ -25,6 +26,12 @@
       <span>Log</span>
       <span>Skip</span>
     </div>
+  </div>
+  <div id="selector-wrapper">
+    <ul id="selector">
+      <li>aa</li>
+      <li>bb</li>
+    </ul>
   </div>
 </div>
 
@@ -82,7 +89,7 @@
     }
 
     //커서가 시나리오의 끝에 오면 화살표를 지웁니다.
-    if (scenario.length-1 === cursor) {
+    if (scenario.length - 1 === cursor) {
       document.getElementById('next').style.display = 'none';
     }
   }
