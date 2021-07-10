@@ -129,11 +129,11 @@
           "value": [{
             "condition": "+",
             "variable": "캐릭터1",
-            "cnt": 3
+            "cnt": 7
           }, {
             "condition": "-",
             "variable": "캐릭터2",
-            "cnt": -10
+            "cnt": -5
           }]
         },
         "name": "김애저",
@@ -239,7 +239,8 @@
   //조건을 만족하지 않는것이 있는지를 찾습니다.
   const conditionCheck = (varCheck) => {
     const {state, value} = varCheck;
-    const chk = value.find(i => {
+
+    const calc = (i) => {
       const c = favor[i.variable];
       switch (i.condition) {
         case "+":
@@ -251,10 +252,17 @@
         default:
           return true;
       }
-    })
+    }
+
     //OR이면 조건을 하나만 이라도 만족하는지를 체크하고
     //그외의 경우에는 만족하는것이 있는지를 체크합니다.
-    return state === "OR" ? !chk : !!chk
+    switch (state) {
+      case "OR":
+        return !!value.find(i => calc(i))
+      case "AND":
+      default:
+        return value.filter(i => calc(i)).length === value.length
+    }
   }
 
   const display = (i) => {
