@@ -38,90 +38,40 @@
   let cursor = 0;
   let currentPhase = "start";
 
-  const favor = {}
+  const favor = {
+    "캐릭터1": 2,
+    "캐릭터2": 0
+  }
 
   const scenario = {
     "start": [
       {
-        "name": "김애저",
-        "text": "첫번째 샘플 텍스트입니다.",
-        "image": {
-          "src": './images/char.PNG',
-          "alt": '김애저'
-        }
-      },
-      {
-        "name": "김애저",
-        "text": "두번쨰 샘플 텍스트입니다.",
-      },
-      {
-        "text": "이름이 없는 경우에는 이름 창이 사라졌으면 좋겠어요."
-      },
-      {
-        "name": "rladowj",
-        "text": "왈왈",
-        "image": {
-          "src": './images/char.PNG',
-          "alt": '김애저'
-        }
-      },
-      {
-        "select": [
-          {
-            "text": "선택지 1번",
-            "variable": [
-              {
-                "name": "캐릭터1",
-                "cnt": 3
-              },
-              {
-                "name": "캐릭터2",
-                "cnt": -3
-              }
-            ],
-            "jump": "select1"
-          }, {
-            "text": "선택지 2번",
-            "variable": [
-              {
-                "name": "캐릭터1",
-                "cnt": 5
-              },
-              {
-                "name": "캐릭터2",
-                "cnt": -6
-              }
-            ]
-          }, {
-
-            "text": "선택지 3번",
-            "variable": [
-              {
-                "name": "캐릭터1",
-                "cnt": 1
-              },
-              {
-                "name": "캐릭터2",
-                "cnt": 10
-              }
-            ]
-          }
-        ]
+        "text": "시작.",
       },
       {
         "varCheck": {
           "value": [{
             "condition": "+",
             "variable": "캐릭터1",
-            "cnt": 3
+            "cnt": 1
           }]
         },
-        "name": "김애저",
-        "text": "캐릭터1의 호감도가 3보다 큽니다.",
-        "image": {
-          "src": './images/char.PNG',
-          "alt": '김애저'
-        }
+        "text": "캐릭터1의 호감도가 1보다 큽니다.",
+      },
+      {
+        "varCheck": {
+          "state": "OR",
+          "value": [{
+            "condition": "+",
+            "variable": "캐릭터1",
+            "cnt": 1
+          }, {
+            "condition": "-",
+            "variable": "캐릭터2",
+            "cnt": 1
+          }]
+        },
+        "text": "캐릭터1의 호감도가 1보다 크거나 \n 캐릭터2의 호감도가 1보다 작습니다.",
       },
       {
         "varCheck": {
@@ -129,75 +79,56 @@
           "value": [{
             "condition": "+",
             "variable": "캐릭터1",
-            "cnt": 3
+            "cnt": 1
           }, {
-            "condition": "-",
+            "condition": "=",
             "variable": "캐릭터2",
-            "cnt": -10
+            "cnt": 0
           }]
         },
-        "name": "김애저",
-        "text": "캐릭터1의 호감도가 3보다 큽니다. \n 캐릭터2의 호감도가 -10보다 작습니다.",
-        "image": {
-          "src": './images/char.PNG',
-          "alt": '김애저'
-        }
-      },
-      {
-        "varCheck": {
-          "value": [{
-            "condition": "-",
-            "variable": "캐릭터2",
-            "cnt": 3
-          }]
-        },
-        "name": "김애저",
-        "text": "캐릭터2의 호감도가 3보다 작습니다.",
-        "image": {
-          "src": './images/char.PNG',
-          "alt": '김애저'
-        }
-      }
-    ],
-    "select1": [
-      {
-        "text": "선택지 1번을 클릭 했습니다",
+        "text": "캐릭터1의 호감도가 1보다 크고 \n 캐릭터2의 호감도가 0입니다.",
       },
       {
         "select": [
           {
             "varCheck": {
-              "state": "AND",
               "value": [{
                 "condition": "+",
                 "variable": "캐릭터2",
-                "cnt": 3
+                "cnt": -10
               }]
             },
-            "text": "캐릭터 2의 호감도가 3보다 크다.",
-            "variable": [
-              {
-                "name": "캐릭터1",
-                "cnt": 5
-              },
-              {
-                "name": "캐릭터2",
-                "cnt": -6
-              }
-            ]
+            "text": "캐릭터1의 호감도가 1보다 큽니다.",
           }, {
-
-            "text": "선택지 3번",
-            "variable": [
-              {
-                "name": "캐릭터1",
+            "varCheck": {
+              "state": "OR",
+              "value": [{
+                "condition": "+",
+                "variable": "캐릭터1",
                 "cnt": 1
-              },
-              {
-                "name": "캐릭터2",
-                "cnt": 10
-              }
-            ]
+              }, {
+                "condition": "-",
+                "variable": "캐릭터2",
+                "cnt": 1
+              }]
+            },
+            "text": "캐릭터1의 호감도가 1보다 크거나 \n 캐릭터2의 호감도가 1보다 작습니다.",
+
+          }, {
+            "varCheck": {
+              "state": "AND",
+              "value": [{
+                "condition": "+",
+                "variable": "캐릭터1",
+                "cnt": 1
+              }, {
+                "condition": "=",
+                "variable": "캐릭터2",
+                "cnt": 0
+              }]
+            },
+            "text": "캐릭터1의 호감도가 1보다 크고 \n 캐릭터2의 호감도가 0입니다.",
+
           }
         ]
       },
@@ -236,25 +167,33 @@
     }
   }
 
-  //조건을 만족하지 않는것이 있는지를 찾습니다.
+  //조건을 만족하는것이 있는지를 찾습니다.
   const conditionCheck = (varCheck) => {
     const {state, value} = varCheck;
-    const chk = value.find(i => {
+
+    const calc = (i) => {
       const c = favor[i.variable];
       switch (i.condition) {
         case "+":
-          return c < i.cnt;
-        case "-":
           return c > i.cnt;
+        case "-":
+          return c < i.cnt;
         case "=":
-          return c !== i.cnt;
+          return c === i.cnt;
         default:
           return true;
       }
-    })
+    }
+
     //OR이면 조건을 하나만 이라도 만족하는지를 체크하고
     //그외의 경우에는 만족하는것이 있는지를 체크합니다.
-    return state === "OR" ? !chk : !!chk
+    switch (state) {
+      case "OR":
+        return !!value.find(i => calc(i))
+      case "AND":
+      default:
+        return value.filter(i => calc(i)).length === value.length
+    }
   }
 
   const qSave = () => {
@@ -291,7 +230,7 @@
       document.getElementById('selector-wrapper').style.display = 'grid';
       document.getElementById('selector').innerHTML = select.map(i => {
         // 선택지에서도 호감도 체크를 해 줍니다.
-        if (!!select.varCheck && conditionCheck(select.varCheck)) {
+        if (!!i.varCheck && !conditionCheck(i.varCheck)) {
           return null
         } else {
           return `<li onclick="handleSelect('${encodeURI(JSON.stringify(i))}')">${i.text}</li>`
@@ -320,7 +259,7 @@
 
 
     // 호감도 체크가 있으면 호감도를 체크 해 줍니다.
-    if (!!varCheck && conditionCheck(varCheck)) {
+    if (!!varCheck && !conditionCheck(varCheck)) {
       parse(++cursor)
     } else {
       // 호감도 체크가 없으면 화면을 그냥 띄워줍니다.
