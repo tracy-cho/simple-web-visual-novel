@@ -21,8 +21,8 @@
       </div>
     </div>
     <div id="setting">
-      <span>Quick SAVE</span>
-      <span>Quick Load</span>
+      <span onclick="qSave()">Quick SAVE</span>
+      <span onclick="qLoad()">Quick Load</span>
       <span>Log</span>
       <span>Skip</span>
     </div>
@@ -255,6 +255,17 @@
     //OR이면 조건을 하나만 이라도 만족하는지를 체크하고
     //그외의 경우에는 만족하는것이 있는지를 체크합니다.
     return state === "OR" ? !chk : !!chk
+  }
+
+  const qSave = () => {
+    localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor}))
+  }
+  const qLoad = () => {
+    const save = JSON.parse(localStorage.getItem("qSave"))
+    cursor = save.cursor;
+    currentPhase = save.currentPhase;
+    Object.assign(favor, save.favor)
+    parse(save.cursor)
   }
 
   const display = (i) => {
