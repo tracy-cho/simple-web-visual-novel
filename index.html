@@ -93,6 +93,7 @@
               }
             ]
           }, {
+
             "text": "선택지 3번",
             "variable": [
               {
@@ -108,8 +109,50 @@
         ]
       },
       {
+        "varCheck": {
+          "value": [{
+            "condition": "+",
+            "variable": "캐릭터1",
+            "cnt": 3
+          }]
+        },
         "name": "김애저",
-        "text": "선택완료",
+        "text": "캐릭터1의 호감도가 3보다 큽니다.",
+        "image": {
+          "src": './images/char.PNG',
+          "alt": '김애저'
+        }
+      },
+      {
+        "varCheck": {
+          "state": "AND",
+          "value": [{
+            "condition": "+",
+            "variable": "캐릭터1",
+            "cnt": 3
+          }, {
+            "condition": "-",
+            "variable": "캐릭터2",
+            "cnt": -10
+          }]
+        },
+        "name": "김애저",
+        "text": "캐릭터1의 호감도가 3보다 큽니다. \n 캐릭터2의 호감도가 -10보다 작습니다.",
+        "image": {
+          "src": './images/char.PNG',
+          "alt": '김애저'
+        }
+      },
+      {
+        "varCheck": {
+          "value": [{
+            "condition": "-",
+            "variable": "캐릭터2",
+            "cnt": 3
+          }]
+        },
+        "name": "김애저",
+        "text": "캐릭터2의 호감도가 3보다 작습니다.",
         "image": {
           "src": './images/char.PNG',
           "alt": '김애저'
@@ -121,8 +164,42 @@
         "text": "선택지 1번을 클릭 했습니다",
       },
       {
-        "text": "시작으로 돌아가기",
-        "jump": "start"
+        "select": [
+          {
+            "varCheck": {
+              "state": "AND",
+              "value": [{
+                "condition": "+",
+                "variable": "캐릭터2",
+                "cnt": 3
+              }]
+            },
+            "text": "캐릭터 2의 호감도가 3보다 크다.",
+            "variable": [
+              {
+                "name": "캐릭터1",
+                "cnt": 5
+              },
+              {
+                "name": "캐릭터2",
+                "cnt": -6
+              }
+            ]
+          }, {
+
+            "text": "선택지 3번",
+            "variable": [
+              {
+                "name": "캐릭터1",
+                "cnt": 1
+              },
+              {
+                "name": "캐릭터2",
+                "cnt": 10
+              }
+            ]
+          }
+        ]
       },
     ]
   }
@@ -156,14 +233,30 @@
     }
   }
 
-  const parse = (i = 0) => {
+  //조건을 만족하지 않는것이 있는지를 찾습니다.
+  const conditionCheck = (varCheck) => {
+    const {state, value} = varCheck;
+    const chk = value.find(i => {
+      const c = favor[i.variable];
+      switch (i.condition) {
+        case "+":
+          return c < i.cnt;
+        case "-":
+          return c > i.cnt;
+        case "=":
+          return c !== i.cnt;
+        default:
+          return true;
+      }
+    })
+    //OR이면 조건을 하나만 이라도 만족하는지를 체크하고
+    //그외의 경우에는 만족하는것이 있는지를 체크합니다.
+    return state === "OR" ? !chk : !!chk
+  }
+
+  const display = (i) => {
 
     const {text, name, image, select, jump} = scenario[currentPhase][i];
-
-    //화면을 초기화 해줍니다.
-    document.getElementById('name').style.display = 'none';
-    document.getElementById('selector-wrapper').style.display = 'none';
-    document.getElementById('character-wrapper').innerHTML = null;
 
     //텍스트를 출력 해 줍니다.
     document.getElementById('text').innerText = text;
@@ -185,7 +278,6 @@
       document.getElementById('selector').innerHTML = select.map(i =>
         `<li onclick="handleSelect('${encodeURI(JSON.stringify(i))}')">${i.text}</li>`).join('')
     }
-
     //jump가 있으면 해당 시나리오 오브젝트로 이동합니다.
     if (!!jump) {
       jumping(jump);
@@ -195,7 +287,25 @@
     if (scenario[currentPhase].length - 1 === cursor && !jump) {
       document.getElementById('next').style.display = 'none';
     }
-    
+  }
+
+  const parse = (i = 0) => {
+
+    const {varCheck} = scenario[currentPhase][i];
+
+    //화면을 초기화 해줍니다.
+    document.getElementById('name').style.display = 'none';
+    document.getElementById('selector-wrapper').style.display = 'none';
+    document.getElementById('character-wrapper').innerHTML = null;
+
+
+    // 호감도 체크가 있으면 호감도를 체크 해 줍니다.
+    if (!!varCheck && conditionCheck(varCheck)) {
+      parse(++cursor)
+    } else {
+      // 호감도 체크가 없으면 화면을 그냥 띄워줍니다.
+      display(cursor)
+    }
   }
 
 
