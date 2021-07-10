@@ -201,6 +201,9 @@
           }
         ]
       },
+      {
+        "text": "끝",
+      },
     ]
   }
 
@@ -275,8 +278,14 @@
     //선택지가 있으면 선택지를 출력 해 줍니다.
     if (!!select) {
       document.getElementById('selector-wrapper').style.display = 'grid';
-      document.getElementById('selector').innerHTML = select.map(i =>
-        `<li onclick="handleSelect('${encodeURI(JSON.stringify(i))}')">${i.text}</li>`).join('')
+      document.getElementById('selector').innerHTML = select.map(i => {
+        // 선택지에서도 호감도 체크를 해 줍니다.
+        if (!!select.varCheck && conditionCheck(select.varCheck)) {
+          return null
+        } else {
+          return `<li onclick="handleSelect('${encodeURI(JSON.stringify(i))}')">${i.text}</li>`
+        }
+      }).join('')
     }
     //jump가 있으면 해당 시나리오 오브젝트로 이동합니다.
     if (!!jump) {
