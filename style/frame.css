@@ -17,7 +17,7 @@ body {
 
     position: relative;
 
-    background-image: url("../images/default-bg.png");
+    background-color: black;
     background-size: cover;
 
 }

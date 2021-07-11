@@ -9,14 +9,14 @@
 </head>
 <body>
 
-<div id="whole-wrapper">
+<div id="whole-wrapper" onclick="parse(++cursor)">
 
   <div id="character-wrapper"></div>
   <div id="chat-wrapper">
     <div id="name"></div>
     <div id="text-wrapper">
       <div id="text"></div>
-      <div id="next" onclick="parse(++cursor)">
+      <div id="next">
         &gt;
       </div>
     </div>
@@ -37,6 +37,7 @@
 
   let cursor = 0;
   let currentPhase = "start";
+  let bgImage = './images/default-bg.png'
 
   const favor = {
     "캐릭터1": 2,
@@ -47,90 +48,10 @@
     "start": [
       {
         "text": "시작.",
+        "bg": "./images/default-bg.png"
       },
       {
-        "varCheck": {
-          "value": [{
-            "condition": "+",
-            "variable": "캐릭터1",
-            "cnt": 1
-          }]
-        },
-        "text": "캐릭터1의 호감도가 1보다 큽니다.",
-      },
-      {
-        "varCheck": {
-          "state": "OR",
-          "value": [{
-            "condition": "+",
-            "variable": "캐릭터1",
-            "cnt": 1
-          }, {
-            "condition": "-",
-            "variable": "캐릭터2",
-            "cnt": 1
-          }]
-        },
-        "text": "캐릭터1의 호감도가 1보다 크거나 \n 캐릭터2의 호감도가 1보다 작습니다.",
-      },
-      {
-        "varCheck": {
-          "state": "AND",
-          "value": [{
-            "condition": "+",
-            "variable": "캐릭터1",
-            "cnt": 1
-          }, {
-            "condition": "=",
-            "variable": "캐릭터2",
-            "cnt": 0
-          }]
-        },
-        "text": "캐릭터1의 호감도가 1보다 크고 \n 캐릭터2의 호감도가 0입니다.",
-      },
-      {
-        "select": [
-          {
-            "varCheck": {
-              "value": [{
-                "condition": "+",
-                "variable": "캐릭터2",
-                "cnt": -10
-              }]
-            },
-            "text": "캐릭터1의 호감도가 1보다 큽니다.",
-          }, {
-            "varCheck": {
-              "state": "OR",
-              "value": [{
-                "condition": "+",
-                "variable": "캐릭터1",
-                "cnt": 1
-              }, {
-                "condition": "-",
-                "variable": "캐릭터2",
-                "cnt": 1
-              }]
-            },
-            "text": "캐릭터1의 호감도가 1보다 크거나 \n 캐릭터2의 호감도가 1보다 작습니다.",
-
-          }, {
-            "varCheck": {
-              "state": "AND",
-              "value": [{
-                "condition": "+",
-                "variable": "캐릭터1",
-                "cnt": 1
-              }, {
-                "condition": "=",
-                "variable": "캐릭터2",
-                "cnt": 0
-              }]
-            },
-            "text": "캐릭터1의 호감도가 1보다 크고 \n 캐릭터2의 호감도가 0입니다.",
-
-          }
-        ]
+        "bg": "./images/cg.png",
       },
       {
         "text": "끝",
@@ -197,22 +118,32 @@
   }
 
   const qSave = () => {
-    localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor}))
+    localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor, bgImage}))
   }
   const qLoad = () => {
     const save = JSON.parse(localStorage.getItem("qSave"))
     cursor = save.cursor;
     currentPhase = save.currentPhase;
     Object.assign(favor, save.favor)
+    document.getElementById('whole-wrapper').style.backgroundImage = `url('${save.bgImage}')`;
     parse(save.cursor)
   }
 
   const display = (i) => {
 
-    const {text, name, image, select, jump} = scenario[currentPhase][i];
+    const {text, name, image, select, jump, bg} = scenario[currentPhase][i];
 
-    //텍스트를 출력 해 줍니다.
-    document.getElementById('text').innerText = text;
+    //bg가 있으면 bg를 바꾼다.
+    if (!!bg && bg !== bgImage) {
+      document.getElementById('whole-wrapper').style.backgroundImage = `url('${bg}')`
+      bgImage = bg;
+    }
+
+    //텍스트 유무에 따른 출력
+    if (!!text) {
+      document.getElementById('chat-wrapper').style.display = 'grid';
+      document.getElementById('text').innerText = text;
+    }
 
     //이름유무에 따른 출력
     if (!!name) {
@@ -255,6 +186,7 @@
     //화면을 초기화 해줍니다.
     document.getElementById('name').style.display = 'none';
     document.getElementById('selector-wrapper').style.display = 'none';
+    document.getElementById('chat-wrapper').style.display = 'none';
     document.getElementById('character-wrapper').innerHTML = null;
 
 
@@ -267,8 +199,18 @@
     }
   }
 
+  const init = () => {
+    cursor = 0;
+    currentPhase = "start";
+    document.getElementById('whole-wrapper').style.backgroundImage = `url('${bgImage}')`;
+    for (const prop of Object.getOwnPropertyNames(favor)) {
+      delete favor[prop];
+    }
+    parse(cursor);
+  }
 
-  parse(cursor);
+  init();
+
 
 </script>
 </body>
