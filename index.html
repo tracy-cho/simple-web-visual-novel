@@ -228,6 +228,8 @@
 
   const closeMenu = () => {
     document.getElementById('menu-wrapper').style.display = 'none';
+    document.getElementById('menu-list').style.display = 'flex';
+    document.getElementById('save-wrapper').style.display = 'none';
     oncontextmenu = () => false;
   }
   const saveMenu = () => {
