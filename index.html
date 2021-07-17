@@ -41,13 +41,13 @@
 <div id="menu-wrapper">
   <ul id="menu-list">
     <li onclick="closeMenu()">돌아가기</li>
-    <li onclick="saveMenu()">저장하기</li>
-    <li>불러오기</li>
+    <li onclick="saveMenu(true)">저장하기</li>
+    <li onclick="saveMenu(false)">불러오기</li>
     <li>갤러리</li>
   </ul>
   <div id="save-wrapper">
     <div class="back" onclick="closeMenu()">X</div>
-    <div id="save-title">SAVE</div>
+    <div id="save-title"></div>
     <div id="slot-wrapper">
       <div class="slot-add" onclick="newSave()"></div>
     </div>
@@ -221,6 +221,10 @@
 
 </script>
 <script>
+
+  //세이브 / 로드 state 체크
+  let saveMode;
+
   window.addEventListener('auxclick', () => {
     document.getElementById('menu-wrapper').style.display = 'flex';
     oncontextmenu = () => false;
@@ -232,16 +236,57 @@
     document.getElementById('save-wrapper').style.display = 'none';
     oncontextmenu = () => false;
   }
-  const saveMenu = () => {
+  const saveMenu = (isSave) => {
+    saveMode = isSave;
+    document.getElementById('save-title').innerText = isSave ? "SAVE" : "LOAD";
     document.getElementById('menu-list').style.display = 'none';
     document.getElementById('save-wrapper').style.display = 'grid';
     getSaveList();
   }
 
+
+  const qSave = () => {
+    localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor, bgImage}));
+  }
+  const qLoad = () => load(JSON.parse(localStorage.getItem("qSave")));
+
+  const load = (save) => {
+    cursor = save.cursor;
+    currentPhase = save.currentPhase;
+    Object.assign(favor, save.favor);
+    document.getElementById('whole-wrapper').style.backgroundImage = `url('${save.bgImage}')`;
+    parse(save.cursor)
+  }
+
+  //세이브/로드시 슬롯을 클릭했을 때
+  const handleClickSlot = (idx) => {
+    const save = JSON.parse(localStorage.getItem('save'));
+    if (saveMode) {
+      html2canvas(document.getElementById("whole-wrapper")).then(canvas => {
+        save[idx] = {
+          cursor,
+          currentPhase,
+          favor,
+          bgImage,
+          timestamp: new Date(),
+          screenShot: canvas.toDataURL('image/png')
+        }
+      }).finally(
+        () => {
+          localStorage.setItem('save', JSON.stringify(save))
+          getSaveList();
+        }
+      )
+    } else {
+      load(save[idx]);
+      closeMenu();
+    }
+  }
+
   const getSaveList = () => {
     const saveList = JSON.parse(localStorage.getItem('save')) ?? []
-    document.getElementById('slot-wrapper').innerHTML = saveList.map(i =>
-        `<div class="slot">
+    document.getElementById('slot-wrapper').innerHTML = saveList.map((i, idx) =>
+        `<div class="slot" onclick='handleClickSlot(${idx})'>
             <img src="${i.screenShot}" alt="screenshot">
             <span>${i.timestamp}</span>
           </div>`
@@ -267,18 +312,6 @@
       }
     )
 
-  }
-
-  const qSave = () => {
-    localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor, bgImage}))
-  }
-  const qLoad = () => {
-    const save = JSON.parse(localStorage.getItem("qSave"))
-    cursor = save.cursor;
-    currentPhase = save.currentPhase;
-    Object.assign(favor, save.favor)
-    document.getElementById('whole-wrapper').style.backgroundImage = `url('${save.bgImage}')`;
-    parse(save.cursor)
   }
 
 
