@@ -53,11 +53,13 @@
     </div>
   </div>
 </div>
+
+<span>bg image : https://unsplash.com/photos/YfT6HTw-keE</span>
 <script>
 
   let cursor = 0;
   let currentPhase = "start";
-  let bgImage = './images/default-bg.png'
+  let bgImage = './images/default-bg.jpg'
 
   const favor = {
     "캐릭터1": 2,
@@ -68,14 +70,38 @@
     "start": [
       {
         "text": "시작.",
-        "bg": "./images/default-bg.png"
+        "bg": "./images/default-bg.jpg"
       },
       {
-        "bg": "./images/cg.png",
+        "name": "한현석",
+        "image": {
+          "src": "./images/char.png",
+          "alt": "한현석"
+        },
+        "text": "세이브로드구현",
+        "bg": "./images/default-bg.jpg"
+      }, {
+        "name": "한현석",
+        "image": {
+          "src": "./images/char.png",
+          "alt": "한현석"
+        },
+        "text": "여긴 두번째 입니다",
+        "bg": "./images/default-bg.jpg"
+      }, {
+        "name": "한현석",
+        "image": {
+          "src": "./images/char.png",
+          "alt": "한현석"
+        },
+        "text": "세번째입니다",
+        "bg": "./images/default-bg.jpg"
       },
       {
         "text": "끝",
-      },
+      }, {
+        "jump": "start"
+      }
     ]
   }
 
