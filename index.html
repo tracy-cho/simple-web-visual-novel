@@ -33,7 +33,6 @@
     </ul>
   </div>
   <div>
-
   </div>
 
 </div>
@@ -49,19 +48,20 @@
     <div class="back" onclick="closeMenu()">X</div>
     <div id="save-title"></div>
     <div id="slot-wrapper">
-      <div class="slot-add" onclick="newSave()"></div>
     </div>
   </div>
 </div>
-
-<span>bg image : https://unsplash.com/photos/YfT6HTw-keE</span>
+<div class="cp">
+  <span>bg image : https://unsplash.com/photos/YfT6HTw-keE</span><br>
+  <span>bg image2 : https://unsplash.com/photos/VWcPlbHglYc</span>
+</div>
 <script>
 
   let cursor = 0;
   let currentPhase = "start";
   let bgImage = './images/default-bg.jpg'
 
-  const favor = {
+  let favor = {
     "캐릭터1": 2,
     "캐릭터2": 0
   }
@@ -73,29 +73,24 @@
         "bg": "./images/default-bg.jpg"
       },
       {
-        "name": "한현석",
+        "bg": "./images/bg2.jpg"
+      },
+      {
         "image": {
           "src": "./images/char.png",
-          "alt": "한현석"
+          "alt": "캐릭터1"
         },
-        "text": "세이브로드구현",
-        "bg": "./images/default-bg.jpg"
-      }, {
-        "name": "한현석",
+        "text": "샘플텍스트입니다. 여기에서 저장 할 생각이에요."
+      },
+      {
+        "text": "...."
+      },
+      {
         "image": {
           "src": "./images/char.png",
-          "alt": "한현석"
+          "alt": "캐릭터1"
         },
-        "text": "여긴 두번째 입니다",
-        "bg": "./images/default-bg.jpg"
-      }, {
-        "name": "한현석",
-        "image": {
-          "src": "./images/char.png",
-          "alt": "한현석"
-        },
-        "text": "세번째입니다",
-        "bg": "./images/default-bg.jpg"
+        "text": "여기에서 불러오기를 눌렀을 때 저장 할 생각이었던 텍스트를 불러와야 할 것 같네요."
       },
       {
         "text": "끝",
@@ -236,10 +231,9 @@
   const init = () => {
     cursor = 0;
     currentPhase = "start";
+    bgImage = './images/default-bg.png'
     document.getElementById('whole-wrapper').style.backgroundImage = `url('${bgImage}')`;
-    for (const prop of Object.getOwnPropertyNames(favor)) {
-      delete favor[prop];
-    }
+    favor = {}
     parse(cursor);
   }
 
@@ -260,8 +254,8 @@
     document.getElementById('menu-wrapper').style.display = 'none';
     document.getElementById('menu-list').style.display = 'flex';
     document.getElementById('save-wrapper').style.display = 'none';
-    oncontextmenu = () => false;
   }
+
   const saveMenu = (isSave) => {
     saveMode = isSave;
     document.getElementById('save-title').innerText = isSave ? "SAVE" : "LOAD";
@@ -271,38 +265,33 @@
   }
 
 
-  const qSave = () => {
-    localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor, bgImage}));
-  }
+  const qSave = () => localStorage.setItem("qSave", JSON.stringify({cursor, currentPhase, favor, bgImage}));
+
   const qLoad = () => load(JSON.parse(localStorage.getItem("qSave")));
 
   const load = (save) => {
     cursor = save.cursor;
     currentPhase = save.currentPhase;
-    Object.assign(favor, save.favor);
+    favor = save.favor;
     document.getElementById('whole-wrapper').style.backgroundImage = `url('${save.bgImage}')`;
     parse(save.cursor)
   }
 
   //세이브/로드시 슬롯을 클릭했을 때
-  const handleClickSlot = (idx) => {
+  const handleClickSlot = async (idx) => {
     const save = JSON.parse(localStorage.getItem('save'));
     if (saveMode) {
-      html2canvas(document.getElementById("whole-wrapper")).then(canvas => {
-        save[idx] = {
-          cursor,
-          currentPhase,
-          favor,
-          bgImage,
-          timestamp: new Date(),
-          screenShot: canvas.toDataURL('image/png')
-        }
-      }).finally(
-        () => {
-          localStorage.setItem('save', JSON.stringify(save))
-          getSaveList();
-        }
-      )
+      const canvas = await html2canvas(document.getElementById("whole-wrapper"))
+      save[idx] = {
+        cursor,
+        currentPhase,
+        favor,
+        bgImage,
+        timestamp: new Date(),
+        screenShot: canvas.toDataURL('image/png')
+      }
+      localStorage.setItem('save', JSON.stringify(save))
+      getSaveList();
     } else {
       load(save[idx]);
       closeMenu();
@@ -317,27 +306,22 @@
             <span>${i.timestamp}</span>
           </div>`
       ).join('') +
-      '<div class="slot-add" onclick="newSave()"></div>';
+      (saveMode && '<div class="slot-add" onclick="newSave()"></div>');
   }
 
-  const newSave = () => {
+  const newSave = async () => {
     const saveList = JSON.parse(localStorage.getItem('save')) ?? []
-    html2canvas(document.getElementById("whole-wrapper")).then(canvas => {
-      saveList.push({
-        cursor,
-        currentPhase,
-        favor,
-        bgImage,
-        timestamp: new Date(),
-        screenShot: canvas.toDataURL('image/png')
-      })
-    }).finally(
-      () => {
-        localStorage.setItem('save', JSON.stringify(saveList))
-        getSaveList()
-      }
-    )
-
+    const screenshot = await html2canvas(document.getElementById("whole-wrapper"))
+    saveList.push({
+      cursor,
+      currentPhase,
+      favor,
+      bgImage,
+      timestamp: new Date(),
+      screenShot: screenshot.toDataURL('image/png')
+    })
+    localStorage.setItem('save', JSON.stringify(saveList))
+    getSaveList()
   }
 
 

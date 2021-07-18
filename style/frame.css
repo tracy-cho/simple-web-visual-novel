@@ -4,7 +4,11 @@ body {
     display: grid;
     place-content: center;
 }
-
+.cp{
+    position: fixed;
+    left: calc(50% - 320px);
+    top: calc(50% + 240px);
+}
 #whole-wrapper {
 
     width: 640px;
