@@ -4,11 +4,13 @@ body {
     display: grid;
     place-content: center;
 }
-.cp{
+
+.cp {
     position: fixed;
     left: calc(50% - 320px);
     top: calc(50% + 240px);
 }
+
 #whole-wrapper {
 
     width: 640px;
@@ -24,12 +26,37 @@ body {
     background-color: black;
     background-size: cover;
 
+    overflow: hidden;
+
 }
 
 #character-wrapper > img {
     max-height: 480px;
     position: absolute;
+}
+
+.left {
+    left: 0;
     bottom: 0;
+    transform: translate(0%, 0%);
+}
+
+.right {
+    right: 0;
+    bottom: 0;
+    transform: translate(0%, 0%);
+}
+
+.middle {
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 0);
+}
+
+.center {
+    left: 50%;
+    bottom: 50%;
+    transform: translate(-50%, 50%);
 }
 
 #chat-wrapper {
@@ -138,7 +165,7 @@ body {
     color: white;
     position: absolute;
     font-size: 2em;
-    top:.5rem;
+    top: .5rem;
     right: 1rem;
     cursor: pointer;
 }

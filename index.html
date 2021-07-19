@@ -6,6 +6,7 @@
 
   <link rel="stylesheet" href="./style/reset.css">
   <link rel="stylesheet" href="./style/frame.css">
+  <link rel="stylesheet" href="./style/ani.css">
   <script src="js/html2canvas.min.js"></script>
 </head>
 <body>
@@ -77,20 +78,64 @@
       },
       {
         "image": {
-          "src": "./images/char.png",
-          "alt": "캐릭터1"
+          "char1": {
+            "src": "./images/char.png",
+            "alt": "캐릭터1",
+            "pos": {
+              "x": "30%",
+              "y": "10%"
+            }
+          }
         },
-        "text": "샘플텍스트입니다. 여기에서 저장 할 생각이에요."
+        "text": "x 30% y 10%"
+      }, {
+        "image": {
+          "char1": {
+            "src": "./images/center.png",
+            "alt": "cat",
+            "animation": "fade-in",
+            "pos": "center"
+          },
+          "char2": {
+            "src": "./images/char2.png",
+            "alt": "캐릭터2",
+            "pos": "right"
+          }
+        },
+        "text": "고양이는 정중앙에서 fadein\n캐릭터2는 우측"
+      }, {
+        "image": {
+          "char1": {
+            "src": "./images/char.png",
+            "alt": "캐릭터1",
+            "animation": "fade-in",
+            "pos": "middle"
+          },
+          "char2": {
+            "src": "./images/char2.png",
+            "alt": "캐릭터2",
+            "pos": "left"
+          }
+        },
+        "text": "캐릭터 1은 중앙에서 fade-in, \n캐릭터 2는 좌측"
       },
       {
         "text": "...."
       },
       {
         "image": {
-          "src": "./images/char.png",
-          "alt": "캐릭터1"
+          "char1": {
+            "src": "./images/char.png",
+            "alt": "캐릭터1",
+            "pos": "left"
+          },
+          "char2": {
+            "src": "./images/char2.png",
+            "alt": "캐릭터2",
+            "pos": "right"
+          }
         },
-        "text": "여기에서 불러오기를 눌렀을 때 저장 할 생각이었던 텍스트를 불러와야 할 것 같네요."
+        "text": "캐릭터1은 좌측, \n캐릭터2는 우측"
       },
       {
         "text": "끝",
@@ -158,6 +203,15 @@
     }
   }
 
+  const getPosition = (image) => {
+    const {pos, animation} = image;
+    if (typeof pos === 'object') {
+      return `style='transform:translate(${pos.x ?? 0},${pos.y ?? 0})' ${animation && "class='" + animation + "'"}`
+    } else {
+      return `class='${pos} ${animation ?? ''}'`
+    }
+  }
+
   const display = (i) => {
 
     const {text, name, image, select, jump, bg} = scenario[currentPhase][i];
@@ -172,17 +226,26 @@
     if (!!text) {
       document.getElementById('chat-wrapper').style.display = 'grid';
       document.getElementById('text').innerText = text;
+    } else {
+      document.getElementById('chat-wrapper').style.display = 'none';
     }
 
     //이름유무에 따른 출력
     if (!!name) {
       document.getElementById('name').style.display = 'grid';
       document.getElementById('name').innerText = name;
+    } else {
+      document.getElementById('name').style.display = 'none';
     }
 
     //이미지 유무에 따른 출력
     if (!!image) {
-      document.getElementById('character-wrapper').innerHTML = `<img src="${image.src}" alt="${image.alt}"/>`
+      document.getElementById('character-wrapper').innerHTML = Object.keys(image)
+        .map(i =>
+          `<img src="${image[i].src}" alt="${image[i].alt}" ${getPosition(image[i])}/>`)
+        .join('')
+    } else {
+      document.getElementById('character-wrapper').innerHTML = null;
     }
 
     //선택지가 있으면 선택지를 출력 해 줍니다.
@@ -196,6 +259,8 @@
           return `<li onclick="handleSelect('${encodeURI(JSON.stringify(i))}')">${i.text}</li>`
         }
       }).join('')
+    } else {
+      document.getElementById('selector-wrapper').style.display = 'none';
     }
     //jump가 있으면 해당 시나리오 오브젝트로 이동합니다.
     if (!!jump) {
@@ -211,13 +276,6 @@
   const parse = (i = 0) => {
 
     const {varCheck} = scenario[currentPhase][i];
-
-    //화면을 초기화 해줍니다.
-    document.getElementById('name').style.display = 'none';
-    document.getElementById('selector-wrapper').style.display = 'none';
-    document.getElementById('chat-wrapper').style.display = 'none';
-    document.getElementById('character-wrapper').innerHTML = null;
-
 
     // 호감도 체크가 있으면 호감도를 체크 해 줍니다.
     if (!!varCheck && !conditionCheck(varCheck)) {
