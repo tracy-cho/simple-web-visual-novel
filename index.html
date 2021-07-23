@@ -26,7 +26,7 @@
       <span onclick="qSave()">Quick SAVE</span>
       <span onclick="qLoad()">Quick Load</span>
       <span>Log</span>
-      <span>Skip</span>
+      <span onclick="handleSkip()">Skip</span>
     </div>
   </div>
   <div id="selector-wrapper">
@@ -71,10 +71,15 @@
     "start": [
       {
         "text": "시작.",
-        "bg": "./images/default-bg.jpg"
+        "bg": {
+          "src": "./images/default-bg.jpg"
+        }
       },
       {
-        "bg": "./images/bg2.jpg"
+        "bg": {
+          "src": "./images/bg2.jpg",
+          "animation": "fade-in",
+        }
       },
       {
         "image": {
@@ -217,8 +222,11 @@
     const {text, name, image, select, jump, bg} = scenario[currentPhase][i];
 
     //bg가 있으면 bg를 바꾼다.
-    if (!!bg && bg !== bgImage) {
-      document.getElementById('whole-wrapper').style.backgroundImage = `url('${bg}')`
+    if (!!bg && bg.src !== bgImage) {
+      document.getElementById('whole-wrapper').style.backgroundImage = `url('${bg.src ?? bgImage}')`
+      if (!!bg.animation) {
+        document.getElementById('whole-wrapper').className = bg.animation;
+      }
       bgImage = bg;
     }
 
@@ -383,6 +391,15 @@
   }
 
 
+</script>
+<script>
+  let skip = null;
+  const handleSkip = () => {
+    window.addEventListener('click', () => {
+      clearInterval(skip)
+    });
+    skip = setInterval(() => parse(++cursor), 1000);
+  }
 </script>
 </body>
 </html>
