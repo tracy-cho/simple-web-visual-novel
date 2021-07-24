@@ -26,7 +26,7 @@
       <span onclick="qSave()">Quick SAVE</span>
       <span onclick="qLoad()">Quick Load</span>
       <span>Log</span>
-      <span onclick="handleSkip()">Skip</span>
+      <span>Skip</span>
     </div>
   </div>
   <div id="selector-wrapper">
@@ -391,15 +391,6 @@
   }
 
 
-</script>
-<script>
-  let skip = null;
-  const handleSkip = () => {
-    window.addEventListener('click', () => {
-      clearInterval(skip)
-    });
-    skip = setInterval(() => parse(++cursor), 1000);
-  }
 </script>
 </body>
 </html>
